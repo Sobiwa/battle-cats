@@ -1,2 +1,2 @@
-# template
-with webpack, babel, eslint, jest, and prettier
+# Battle Cats
+like battleship, but with cats

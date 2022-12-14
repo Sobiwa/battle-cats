@@ -5,8 +5,68 @@
   font-weight: 600;
   font-style: normal;
 }; */
-
-body {
-  height: 100vh;
-  background-color: blue;
+:root {
+  --cell-size: 8vw;
 }
+body {
+  height: 100%;
+}
+
+.player-board {
+  width: min-content;
+  display: grid;
+  grid-template: repeat(10, auto) / repeat(10, auto);
+}
+
+.grid-cell {
+  border: 0.5px solid rgba(128, 128, 128, 0.164);
+  width: var(--cell-size);
+  height: var(--cell-size);
+  position: relative;
+}
+
+.grid-cell:hover::after {
+  position: absolute;
+  content: '';
+  width: var(--cell-size);
+  height: calc(var(--cell-size) * 5);
+  background-color: black;
+  background-image: url('./img/big-stretch.svg');
+}
+
+.cat-img {
+  position: absolute;
+  top: 3px;
+  rotate: -90deg;
+  width: var(--cell-size);
+  pointer-events: none;
+}
+
+.cat1 {
+  right: -10px;
+  height: calc(var(--cell-size) * 5);
+  transform: scale(5.5, 4);
+}
+
+.cat2 {
+  top: 5px;
+  left: -5px;
+  height: calc(var(--cell-size) * 4);
+  transform: scale(4.3, 2.5);
+}
+
+.cat3 {
+  height: calc(var(--cell-size) * 3);
+  transform: scale(3.5, 2.5);
+}
+
+.cat4 {
+  height: calc(var(--cell-size) * 2);
+  transform: scale(2, 2);
+}
+
+.cat5 {
+  height: calc(var(--cell-size) * 1);
+  transform: scale(1.2);
+}
+

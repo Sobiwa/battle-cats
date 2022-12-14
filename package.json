@@ -1,7 +1,7 @@
 {
-  "name": "template",
+  "name": "battle-cats",
   "version": "1.0.0",
-  "description": "",
+  "description": "like battleship, but with cats",
   "main": "webpack.config.js",
   "scripts": {
     "test": "jest",
@@ -11,15 +11,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Sobiwa/template.git"
+    "url": "git+https://github.com/Sobiwa/battle-cats.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Sobiwa/template/issues"
+    "url": "https://github.com/Sobiwa/battle-cats/issues"
   },
-  "homepage": "https://github.com/Sobiwa/template#readme",
+  "homepage": "https://github.com/Sobiwa/battle-cats#readme",
   "devDependencies": {
     "@babel/core": "^7.20.2",
     "@babel/preset-env": "^7.20.2",
