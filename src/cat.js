@@ -4,6 +4,7 @@ class Cat {
     this.type = type;
     this.hits = 0;
     this.orientation = "vertical";
+    this.coordHit = [];
   }
 
   hit() {
@@ -17,6 +18,10 @@ class Cat {
   rotate() {
     this.orientation =
       this.orientation === "vertical" ? "horizontal" : "vertical";
+  }
+
+  randomizeOrientation() {
+    this.orientation = Math.random() > 0.5 ? "vertical" : "horizontal";
   }
 }
 

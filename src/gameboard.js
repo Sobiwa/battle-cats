@@ -12,11 +12,57 @@ const place = (state) => ({
 
 const receiveAttack = (state) => ({
   takeAttack: (coord) => {
-    if (state.board.coord.attacked) return;
-    if (state.board[coord].occupiedBy) {
-      state.board[coord].occupiedBy.hit();
+    const cell = state.board[`[${coord}]`];
+    if (cell.attacked) return;
+    if (cell.occupiedBy) {
+      cell.occupiedBy.hit();
     }
-    state.board[coord].attacked = true;
+    cell.attacked = true;
+  },
+});
+
+const coordInvalid = (state) => ({
+  coordinatesAreInvalid: (array) =>
+    array.flat().some((item) => item < 0 || item > 9) ||
+    array.some((item) => state.board[`[${item}]`].occupiedBy),
+});
+
+const getCoord = (state) => ({
+  getCoordinates: (coord, cat) => {
+    const array = [];
+    const [x, y] = coord;
+    for (let i = 0; i < cat.length; i += 1) {
+      if (cat.orientation === "vertical") {
+        array.push([x + i, y]);
+      } else {
+        array.push([x, y + i]);
+      }
+    }
+    if (state.coordinatesAreInvalid(array)) return null;
+    return array;
+  },
+});
+
+const cellAssessment = (state) => ({
+  determineRealEstate: ({ length, orientation }) => {
+    const limit = 10 - length;
+    const array = [];
+    let x = 10;
+    let y = 10;
+    if (orientation === "vertical") {
+      y = limit;
+    } else {
+      x = limit;
+    }
+    for (let h = 0; h < x; h++) {
+      for (let v = 0; v < y; v++) {
+        array.push([h, v]);
+      }
+    }
+    const arrayMinusOverlap = array.filter((cell) =>
+      state.getCoordinates(cell, { length, orientation })
+    );
+    return arrayMinusOverlap;
   },
 });
 
@@ -36,45 +82,38 @@ function createGameBoard() {
       gameBoard.board[`[${x},${y}]`] = createSpot(x, y);
     }
   }
-  return Object.assign(gameBoard, place(gameBoard), receiveAttack(gameBoard));
+  return Object.assign(
+    gameBoard,
+    place(gameBoard),
+    receiveAttack(gameBoard),
+    coordInvalid(gameBoard),
+    getCoord(gameBoard)
+  );
+}
+
+function createCompGameBoard() {
+  const gameBoard = createGameBoard();
+  return Object.assign(gameBoard, cellAssessment(gameBoard));
 }
 
 const playerBoard = createGameBoard();
 
-function getCoordinates(coord, cat) {
-  const array = [];
-  const [x, y] = coord;
-  for (let i = 0; i < cat.length; i += 1) {
-    if (cat.orientation === "vertical") {
-      array.push([x + i, y]);
-    } else {
-      array.push([x, y + i]);
-    }
-  }
-  return array;
-}
+const compBoard = createCompGameBoard();
 
-function coordinatesAreInvalid(array) {
-  return (
-    array.flat().some((item) => item < 0 || item > 9) ||
-    array.some((item) => playerBoard.board[`[${item}]`].occupiedBy)
-  );
-}
-
-const cats = createCats();
+const playerCats = createCats();
 
 let catsPlaced = 0;
 let currentCat;
 
-function handleClick({ coordinates }) {
-  if (catsPlaced === 5) return null;
-  currentCat = cats[catsPlaced];
-  const allCoord = getCoordinates(coordinates, currentCat);
-  if (coordinatesAreInvalid(allCoord)) return null;
-  playerBoard.placeCat(allCoord, currentCat);
-  catsPlaced += 1;
-  return currentCat;
+function getCurrentCat() {
+  if (catsPlaced >= 5) return null;
+  return playerCats[catsPlaced];
 }
 
+function handleClick(coordinates) {
+  currentCat = getCurrentCat();
+  playerBoard.placeCat(coordinates, currentCat);
+  catsPlaced += 1;
+}
 
-export { createGameBoard, handleClick, playerBoard };
+export { createGameBoard, handleClick, playerBoard, compBoard, getCurrentCat };
