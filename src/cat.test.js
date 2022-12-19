@@ -9,10 +9,14 @@ test("create cat", () => {
 
 test("apply hit", () => {
   expect((() => {
-    testCat.hit();
+    testCat.hit([0, 0]);
     return testCat.hits;
   })()).toBe(1);
 });
+
+test('track coordinates hit', () => {
+  expect(testCat.coordHit).toEqual([[0,0]]);
+})
 
 test('sink cat', () => {
   expect((() => {

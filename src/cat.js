@@ -7,8 +7,9 @@ class Cat {
     this.coordHit = [];
   }
 
-  hit() {
+  hit(coord) {
     this.hits += 1;
+    this.coordHit.push(coord);
   }
 
   isSunk() {
@@ -30,7 +31,7 @@ function createCats() {
   const cat2 = new Cat(4, "downward cat");
   const cat3 = new Cat(3, "stuff strutter");
   const cat4 = new Cat(2, "quasi loaf");
-  const cat5 = new Cat(1, "compact kitty");
+  const cat5 = new Cat(2, "compact kitty");
   return [cat1, cat2, cat3, cat4, cat5];
 }
 

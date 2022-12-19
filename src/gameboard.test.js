@@ -3,7 +3,7 @@ import { createGameBoard } from './gameboard';
 
 const gb = createGameBoard();
 test('get coordinates', () => {
-  expect(gb.getCoordinates([0,0], {length: 5, orientation: 'vertical'})).toEqual([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]);
+  expect(gb.getCoordinates([0,0], {length: 5, orientation: 'vertical'})).toEqual([[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]]);
 });
 
 test('receive attack', () => {

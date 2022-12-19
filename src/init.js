@@ -1,6 +1,5 @@
-import { createCompGameBoardDisplay, createPlayerGameBoardDisplay } from './dom'
+import { createPlayerGameBoardDisplay } from './dom'
 
 export default function init() {
   createPlayerGameBoardDisplay();
-  createCompGameBoardDisplay();
 }

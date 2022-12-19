@@ -33,6 +33,21 @@ test("adj. spaces - open all around", () => {
   ]);
 });
 
+describe('add second cat', () => {
+  beforeAll(() => {
+    board.board["[1,2]"].attacked = true;
+    board.board["[1,2]"].occupiedBy = "mockCat2";
+  })
+
+  test('adj. spaces - recognizes different cat is hit', () => {
+    expect(assessAdjacentCoordinates([2,2], board, 'mockCat')).toEqual([
+      [2, 1],
+      [3, 2],
+      [2, 3],
+    ]);
+  })
+})
+
 describe("add second hit", () => {
   beforeAll(() => {
     board.board["[2,1]"].attacked = true;

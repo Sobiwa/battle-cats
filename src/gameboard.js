@@ -15,7 +15,7 @@ const receiveAttack = (state) => ({
     const cell = state.board[`[${coord}]`];
     if (cell.attacked) return;
     if (cell.occupiedBy) {
-      cell.occupiedBy.hit();
+      cell.occupiedBy.hit(coord);
     }
     cell.attacked = true;
   },
@@ -33,9 +33,9 @@ const getCoord = (state) => ({
     const [x, y] = coord;
     for (let i = 0; i < cat.length; i += 1) {
       if (cat.orientation === "vertical") {
-        array.push([x + i, y]);
-      } else {
         array.push([x, y + i]);
+      } else {
+        array.push([x + i, y]);
       }
     }
     if (state.coordinatesAreInvalid(array)) return null;
@@ -77,8 +77,8 @@ function createSpot(x, y) {
 function createGameBoard() {
   const gameBoard = {};
   gameBoard.board = {};
-  for (let x = 0; x < 10; x += 1) {
-    for (let y = 0; y < 10; y += 1) {
+  for (let y = 0; y < 10; y += 1) {
+    for (let x = 0; x < 10; x += 1) {
       gameBoard.board[`[${x},${y}]`] = createSpot(x, y);
     }
   }
@@ -116,4 +116,4 @@ function handleClick(coordinates) {
   catsPlaced += 1;
 }
 
-export { createGameBoard, handleClick, playerBoard, compBoard, getCurrentCat };
+export { createGameBoard, handleClick, playerBoard, compBoard, getCurrentCat, playerCats };
