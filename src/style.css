@@ -1,7 +1,7 @@
 @font-face {
-  font-family: 'comfy';
-  src: url('./font/comfortaa-variablefont_wght-webfont.woff2') format('woff2'),
-    url('./font/comfortaa-variablefont_wght-webfont.woff') format('woff');
+  font-family: "comfy";
+  src: url("./font/comfortaa-variablefont_wght-webfont.woff2") format("woff2"),
+    url("./font/comfortaa-variablefont_wght-webfont.woff") format("woff");
   font-weight: 600;
   font-style: normal;
 }
@@ -10,30 +10,35 @@
   --background: #282a36;
   --board-size: min(60vw, 500px);
   --cell-size: calc(var(--board-size) / 10);
-  --cell-size2: 50px;
-  --cat-tracker-size: calc(var(--board-size) * 0.4);
-  --cat-tracker-cell: calc(var(--cell-size) * 0.75);
   --logo-ball-size: 75px;
-  --shrink-scale: calc(((100vw - var(--board-size)) / 2) / var(--board-size));
+  --shrink-scale: 1;
+  --margin: calc((100vw - var(--board-size)) / 2);
+  --shrunk-board: calc(var(--board-size) * var(--shrink-scale));
+  /* --cat-tracker-size: calc(var(--board-size) * 0.4); */
+  --cat-tracker-size: min(calc(var(--margin) * 0.95), 200px);
+  --cat-tracker-cell: calc(var(--cell-size) * 0.75);
+  --margin-top: calc(((100vh - 100px) - var(--board-size)) * 0.5)
 }
 
 body {
   display: grid;
-  grid-template: 100px 1fr / 1fr;
+  grid-template: 100px 1fr / 1fr 1fr 1fr;
+  align-items: center;
+  /* justify-items: center; */
   margin: 0;
   padding: 0;
   position: relative;
   color: whitesmoke;
   height: 100vh;
   width: 100vw;
-  background: url('./img/grrass.jpeg');
+  background: url("./img/grrass.jpeg");
   background-repeat: repeat;
   background-size: 400px;
   text-align: center;
 }
 
 .title {
-  grid-area: 1 / 1 / 2 / -2;
+  grid-area: 1 / 1 / 2 / -1;
   width: min-content;
   height: var(--logo-ball-size);
   margin: auto;
@@ -63,7 +68,7 @@ body {
 .ball {
   box-shadow: 1px 1px 8px rgb(255, 140, 0);
   margin-left: calc(var(--logo-ball-size) * -0.5);
-  content: '';
+  content: "";
   height: var(--logo-ball-size);
   width: var(--logo-ball-size);
   border-radius: 50%;
@@ -72,7 +77,6 @@ body {
 
 .words {
   grid-area: 1 / 1 / 2 / -1;
-
 }
 h1 {
   font-size: 2rem;
@@ -80,7 +84,7 @@ h1 {
 }
 
 .player-board-container {
-  grid-area: 2 / 1 / 3 / 2;
+  grid-area: 2 / 2 / 3 / 3;
   transition: 0.3s;
   margin: auto;
   width: min-content;
@@ -89,14 +93,14 @@ h1 {
   z-index: 3;
 }
 
-.player-board, 
+.player-board,
 .comp-board {
   /* box-sizing: border-box; */
   width: var(--board-size);
   height: var(--board-size);
   display: grid;
   grid-template: repeat(10, auto) / repeat(10, auto);
-  background: url('./img/pexels-pixmike-413195.jpg');
+  background: url("./img/pexels-pixmike-413195.jpg");
   background-repeat: repeat;
   background-size: var(--cell-size) var(--cell-size);
 }
@@ -119,10 +123,14 @@ h1 {
   cursor: pointer;
 }
 
+.comp-board .grid-cell:active {
+  box-shadow: inset 0px 0px 50px 10px rgb(255, 123, 0);
+}
+
 .player-board .grid-cell:hover::after {
   position: absolute;
   left: 0;
-  content: '';
+  content: "";
   background-color: rgba(0, 0, 0, 0.462);
   border-radius: 5px;
 }
@@ -170,13 +178,12 @@ h1 {
 }
 
 .player-board-container.shrink {
-  /* --shrink-scale: 0.3; */
   scale: var(--shrink-scale);
-  translate: calc(-48vw + ((var(--board-size) * var(--shrink-scale)) * 1.6));
+  translate: calc((var(--margin) + var(--shrunk-board)) * -0.5);
 }
 
 .player-board-container.shrink:hover {
-  scale: .75;
+  scale: 0.75;
   border: 2px solid black;
 }
 
@@ -260,9 +267,9 @@ h1 {
 .grid-cell.attacked::before {
   z-index: 1;
   position: absolute;
-  content: '';
+  content: "";
   width: calc(var(--cell-size) / 3);
-  height: calc(var(--cell-size) /3);
+  height: calc(var(--cell-size) / 3);
   background-color: rgba(255, 166, 0, 0.698);
   border-radius: 50%;
   inset: 0;
@@ -285,7 +292,7 @@ h1 {
 }
 
 .comp-board-container {
-  grid-area: 2 / 1 / 3 / 2;
+  grid-area: 2 / 2 / 3 / 3;
   width: min-content;
   height: min-content;
   display: none;
@@ -295,18 +302,24 @@ h1 {
 }
 
 .cat-tracker {
+  margin: var(--margin-top) 10px;
+  /* margin-left: 10px; */
+  /* justify-self: flex-start; */
+  align-self: flex-start;
+  visibility: hidden;
+  grid-area: 2 / 3 / 3 / 4;
   overflow: hidden;
-  /* position: absolute; */
-  top: var(--board-size);
   display: grid;
-  grid-template: repeat(4, var(--cat-tracker-cell)) / repeat(5, var(--cat-tracker-cell));
+  grid-template: repeat(4, calc(var(--cat-tracker-size) / 4)) / repeat(
+      5,
+      calc(var(--cat-tracker-size) / 5)
+    );
   background-color: rgba(255, 255, 255, 0.405);
   border-radius: 20px;
   width: var(--cat-tracker-size);
   height: var(--cat-tracker-size);
-  flex: 0 0 auto;
-  align-content: center;
-  justify-content: center;
+  align-items: center;
+  justify-items: flex-start;
 }
 
 .cat-tracker div img {
@@ -319,7 +332,8 @@ h1 {
 
 .cat-tracker :nth-child(1) img {
   width: calc(var(--cat-tracker-cell) * 5);
-  transform: scale(3.8, 2.7);
+  transform: scale(3.4, 2.7);
+  margin-bottom: -10%;
 }
 
 .cat-tracker :nth-child(2) {
@@ -358,16 +372,23 @@ h1 {
   transform: scale(1.5, 1.1);
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 900px) {
+}
 
+@media only screen and (max-width: 850px) {
   :root {
-    --board-size: 90vw;
+    --scale-size: 0.4;
+    --board-size: min(60vh, 90vw);
     --logo-ball-size: 50px;
+    --second-row: calc((95vh - 50px) * (1 / (1.3 + 1)));
+    --third-row: calc((95vh - 50px) * (1.3 / (1.3 + 1)));
+    --mini-board-size: calc(var(--board-size) * var(--scale-size));
+    --cat-tracker-size: calc(var(--board-size) * 0.4);
   }
 
   body {
     display: grid;
-    grid-template: 5vh 1fr 1.5fr / 50vw 50vw;
+    grid-template: 5vh 1fr 1.3fr 50px/ 50vw 50vw;
     align-items: center;
     justify-items: center;
   }
@@ -381,16 +402,24 @@ h1 {
     font-size: 1rem;
   }
 
+  .player-board-container {
+    grid-area: 3 / 1 / 4 / 3;
+  }
+
   .player-board-container.shrink {
-    --board-size: 40vw;
-    --cell-size: calc(var(--board-size) / 10);
-    scale: 1;
-    translate: none;
+    scale: var(--scale-size);
+    translate: 0px
+      calc(
+        (
+            var(--third-row) - var(--board-size) + var(--second-row) +
+              var(--mini-board-size)
+          ) * -0.5
+      );
     justify-self: center;
   }
 
   .player-board-container.shrink:hover {
-    scale: 1.5;
+    scale: 0.75;
   }
 
   .comp-board-container {
@@ -401,6 +430,14 @@ h1 {
   }
 
   .cat-tracker {
+    margin: auto;
     grid-area: 2 / 2 / 3 / 3;
   }
+}
+
+@media only screen and (max-width: 450px) {
+  :root {
+    --scale-size: 0.5;
+  }
+
 }

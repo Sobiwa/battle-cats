@@ -21,6 +21,8 @@ const playerBoardDisplay = document.querySelector(".player-board");
 const compBoardContainer = document.querySelector(".comp-board-container");
 const compBoardDisplay = document.querySelector(".comp-board");
 
+const catTracker = document.querySelector(".cat-tracker");
+
 function rotateCat() {
   const currentCat = getCurrentCat();
   if (!currentCat) return;
@@ -101,6 +103,16 @@ function createCompGameBoardDisplay() {
   }
 }
 
+function shrinkSize() {
+  const originalSize = compBoardDisplay.offsetWidth;
+  const windowWidth = window.innerWidth;
+  return ((windowWidth - originalSize) / 2.3) / originalSize;
+}
+
+window.addEventListener('resize', () => {
+  document.documentElement.style.setProperty('--shrink-scale',`min(1, ${shrinkSize()})`);
+})
+
 function createPlayerGameBoardDisplay() {
   for (const coord of Object.values(playerBoard.board)) {
     const spot = document.createElement("div");
@@ -121,6 +133,8 @@ function createPlayerGameBoardDisplay() {
           playerBoardContainer.classList.add('shrink');
           compBoardContainer.style.display = 'flex';
           createCompGameBoardDisplay();
+          document.documentElement.style.setProperty('--shrink-scale',`min(1, ${shrinkSize()})`);
+          catTracker.style.visibility = 'visible';
           beginGame();
         }
       }
@@ -128,8 +142,6 @@ function createPlayerGameBoardDisplay() {
     playerBoardDisplay.appendChild(spot);
   }
 }
-
-const catTracker = document.querySelector(".cat-tracker");
 
 function createCatImage(source) {
   const cat = document.createElement("div");
