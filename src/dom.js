@@ -88,7 +88,7 @@ rotateButton.addEventListener("click", () => {
 });
 playerBoardContainer.appendChild(rotateButton);
 
-function addCatImg(destination, currentCat, hidden) {
+function addCatImg(currentCat, hidden) {
   const catImg = new Image();
   catImg.classList.add("cat-img");
   switch (currentCat.type) {
@@ -120,10 +120,7 @@ function addCatImg(destination, currentCat, hidden) {
   if (currentCat.orientation === "horizontal") {
     catImg.classList.add("horizontal-cat");
   }
-  if (hidden) {
-    catImg.classList.add("hidden");
-  }
-  destination.appendChild(catImg);
+  return catImg;
 }
 
 function updateCatTracker(cat) {
@@ -149,14 +146,14 @@ function updateCatTracker(cat) {
   }
   const coord = `${x + cat.hits - 1}-${y}`;
   const domTarget = document.querySelector(`[data-cell='${coord}']`);
-  domTarget.classList.add('cat-tracker-hit');
+  domTarget.classList.add("cat-tracker-hit");
 }
 
 function applyHitImage(target, boardID, coord) {
   target.classList.add("attacked");
   if (boardID.board[`[${coord}]`].occupiedBy) {
     target.classList.add("occupied");
-    if(boardID === compBoard) {
+    if (boardID === compBoard) {
       updateCatTracker(boardID.board[`[${coord}]`].occupiedBy);
     }
   }
@@ -176,19 +173,24 @@ function endGameScreen(message) {
 }
 
 function createCompGameBoardDisplay() {
-  for (const { coordinates } of Object.values(compBoard.board)) {
+  for (const coord of Object.values(compBoard.board)) {
     const cell = document.createElement("div");
     cell.classList.add("grid-cell");
-    cell.dataset.compCoord = coordinates;
+    cell.dataset.compCoord = coord.coordinates;
     cell.addEventListener("click", () => {
-      if (!compBoard.board[`[${coordinates}]`].attacked) {
-        compBoard.takeAttack(coordinates);
-        applyHitImage(cell, compBoard, coordinates);
-        if (checkForWin() === "player wins") {
-          endGameScreen("player wins");
-        } else {
-          compRetaliation();
+      if (!coord.attacked) {
+        compBoard.takeAttack(coord.coordinates);
+        applyHitImage(cell, compBoard, coord.coordinates);
+        if (coord.occupiedBy) {
+          if (coord.occupiedBy.isSunk()) {
+            coord.occupiedBy.domElement.classList.remove('hidden');
+            if (checkForWin() === "player wins") {
+              endGameScreen("player wins");
+              return;
+            }
+          }
         }
+        compRetaliation();
       }
     });
     compBoardDisplay.appendChild(cell);
@@ -222,7 +224,7 @@ function createPlayerGameBoardDisplay() {
       );
       if (coordArray) {
         handleClick(coordArray);
-        addCatImg(spot, currentCat);
+        spot.appendChild(addCatImg(currentCat));
         if (currentCat.type === "compact kitty") {
           playerBoardContainer.removeChild(rotateButton);
           playerBoardContainer.classList.add("shrink");

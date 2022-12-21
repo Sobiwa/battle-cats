@@ -20,8 +20,10 @@ function compPlaceCats() {
     );
     compBoard.placeCat(arrayOfCoord, cat);
     const domSpot = document.querySelector(`[data-comp-coord='${targetSpace}'`);
-    addCatImg(domSpot, cat, true);
-    cat.setDomElement(domSpot);
+    const catImg = addCatImg(cat);
+    catImg.classList.add('hidden');
+    domSpot.appendChild(catImg);
+    cat.setDomElement(catImg);
   });
 }
 
