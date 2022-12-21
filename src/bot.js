@@ -1,6 +1,7 @@
 /* eslint-disable no-plusplus */
 import { createCats } from "./cat";
 import { compBoard } from "./gameboard";
+import { addCatImg } from './dom';
 
 function randomIndex(array) {
   return array[Math.floor(array.length * Math.random())];
@@ -12,11 +13,15 @@ function compPlaceCats() {
   compCats.forEach((cat) => {
     cat.randomizeOrientation();
     const potentialPlacements = compBoard.determineRealEstate(cat);
+    const targetSpace = randomIndex(potentialPlacements);
     const arrayOfCoord = compBoard.getCoordinates(
-      randomIndex(potentialPlacements),
+      targetSpace,
       cat
     );
     compBoard.placeCat(arrayOfCoord, cat);
+    const domSpot = document.querySelector(`[data-comp-coord='${targetSpace}'`);
+    addCatImg(domSpot, cat, true);
+    cat.setDomElement(domSpot);
   });
 }
 

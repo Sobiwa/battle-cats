@@ -24,6 +24,10 @@ class Cat {
   randomizeOrientation() {
     this.orientation = Math.random() > 0.5 ? "vertical" : "horizontal";
   }
+
+  setDomElement(target) {
+    this.domElement = target;
+  }
 }
 
 function createCats() {

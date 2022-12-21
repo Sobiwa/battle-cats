@@ -14,14 +14,56 @@ import {
   getCurrentCat,
 } from "./gameboard";
 
-import { beginGame, compRetaliation } from "./game";
+import { beginGame, checkForWin, compRetaliation } from "./game";
 
 const playerBoardContainer = document.querySelector(".player-board-container");
 const playerBoardDisplay = document.querySelector(".player-board");
 const compBoardContainer = document.querySelector(".comp-board-container");
 const compBoardDisplay = document.querySelector(".comp-board");
 
-const catTracker = document.querySelector(".cat-tracker");
+const catTrackerContainer = document.querySelector(".cat-tracker-container");
+
+function createCatTracker() {
+  const catTrackerDiv = document.createElement("div");
+  catTrackerDiv.classList.add("cat-tracker");
+  for (let y = 0; y < 4; y++) {
+    for (let x = 0; x < 5; x++) {
+      const cell = document.createElement("div");
+      const id = `${x}-${y}`;
+      cell.dataset.cell = id;
+      catTrackerDiv.appendChild(cell);
+    }
+  }
+  return catTrackerDiv;
+}
+
+function createCatImage(source) {
+  const catImg = new Image();
+  catImg.src = source;
+  return catImg;
+}
+
+function appendCatImages() {
+  const first = document.querySelector(`[data-cell='0-0']`);
+  const second = document.querySelector('[data-cell="0-1"]');
+  const third = document.querySelector('[data-cell="0-2"]');
+  const fourth = document.querySelector('[data-cell="0-3"]');
+  const fifth = document.querySelector('[data-cell="2-3"]');
+  first.append(createCatImage(cat1));
+  first.classList.add("cat-tracker-first");
+  second.append(createCatImage(cat2));
+  second.classList.add("cat-tracker-second");
+  third.append(createCatImage(cat3));
+  third.classList.add("cat-tracker-third");
+  fourth.append(createCatImage(cat4));
+  fourth.classList.add("cat-tracker-fourth");
+  fifth.append(createCatImage(cat5));
+  fifth.classList.add("cat-tracker-fifth");
+}
+
+const catTracker = createCatTracker();
+catTrackerContainer.append(catTracker);
+appendCatImages();
 
 function rotateCat() {
   const currentCat = getCurrentCat();
@@ -46,7 +88,7 @@ rotateButton.addEventListener("click", () => {
 });
 playerBoardContainer.appendChild(rotateButton);
 
-function addCatImg(destination, currentCat) {
+function addCatImg(destination, currentCat, hidden) {
   const catImg = new Image();
   catImg.classList.add("cat-img");
   switch (currentCat.type) {
@@ -78,25 +120,75 @@ function addCatImg(destination, currentCat) {
   if (currentCat.orientation === "horizontal") {
     catImg.classList.add("horizontal-cat");
   }
+  if (hidden) {
+    catImg.classList.add("hidden");
+  }
   destination.appendChild(catImg);
+}
+
+function updateCatTracker(cat) {
+  let y;
+  let x = 0;
+  switch (cat.type) {
+    case "big stretch":
+      y = 0;
+      break;
+    case "downward cat":
+      y = 1;
+      break;
+    case "stuff strutter":
+      y = 2;
+      break;
+    case "quasi loaf":
+      y = 3;
+      break;
+    case "compact kitty":
+      y = 3;
+      x = 2;
+      break;
+  }
+  const coord = `${x + cat.hits - 1}-${y}`;
+  const domTarget = document.querySelector(`[data-cell='${coord}']`);
+  domTarget.classList.add('cat-tracker-hit');
 }
 
 function applyHitImage(target, boardID, coord) {
   target.classList.add("attacked");
   if (boardID.board[`[${coord}]`].occupiedBy) {
     target.classList.add("occupied");
+    if(boardID === compBoard) {
+      updateCatTracker(boardID.board[`[${coord}]`].occupiedBy);
+    }
   }
+}
+
+function endGameScreen(message) {
+  const screen = document.createElement("div");
+  screen.classList.add("end-game");
+  const endMessage = document.createElement("div");
+  endMessage.classList.add("end-message");
+  endMessage.textContent = message;
+  const playAgainButton = document.createElement("button");
+  playAgainButton.classList.add("play-again-button");
+  playAgainButton.textContent = "play again";
+  screen.append(endMessage, playAgainButton);
+  document.body.appendChild(screen);
 }
 
 function createCompGameBoardDisplay() {
   for (const { coordinates } of Object.values(compBoard.board)) {
     const cell = document.createElement("div");
     cell.classList.add("grid-cell");
+    cell.dataset.compCoord = coordinates;
     cell.addEventListener("click", () => {
       if (!compBoard.board[`[${coordinates}]`].attacked) {
         compBoard.takeAttack(coordinates);
         applyHitImage(cell, compBoard, coordinates);
-        compRetaliation();
+        if (checkForWin() === "player wins") {
+          endGameScreen("player wins");
+        } else {
+          compRetaliation();
+        }
       }
     });
     compBoardDisplay.appendChild(cell);
@@ -106,12 +198,15 @@ function createCompGameBoardDisplay() {
 function shrinkSize() {
   const originalSize = compBoardDisplay.offsetWidth;
   const windowWidth = window.innerWidth;
-  return ((windowWidth - originalSize) / 2.3) / originalSize;
+  return (windowWidth - originalSize) / 2.3 / originalSize;
 }
 
-window.addEventListener('resize', () => {
-  document.documentElement.style.setProperty('--shrink-scale',`min(1, ${shrinkSize()})`);
-})
+window.addEventListener("resize", () => {
+  document.documentElement.style.setProperty(
+    "--shrink-scale",
+    `min(1, ${shrinkSize()})`
+  );
+});
 
 function createPlayerGameBoardDisplay() {
   for (const coord of Object.values(playerBoard.board)) {
@@ -130,11 +225,14 @@ function createPlayerGameBoardDisplay() {
         addCatImg(spot, currentCat);
         if (currentCat.type === "compact kitty") {
           playerBoardContainer.removeChild(rotateButton);
-          playerBoardContainer.classList.add('shrink');
-          compBoardContainer.style.display = 'flex';
+          playerBoardContainer.classList.add("shrink");
+          compBoardContainer.style.display = "flex";
           createCompGameBoardDisplay();
-          document.documentElement.style.setProperty('--shrink-scale',`min(1, ${shrinkSize()})`);
-          catTracker.style.visibility = 'visible';
+          document.documentElement.style.setProperty(
+            "--shrink-scale",
+            `min(1, ${shrinkSize()})`
+          );
+          catTrackerContainer.style.visibility = "visible";
           beginGame();
         }
       }
@@ -143,32 +241,10 @@ function createPlayerGameBoardDisplay() {
   }
 }
 
-function createCatImage(source) {
-  const cat = document.createElement("div");
-  cat.classList.add('cat-tracker-image');
-  const catImg = new Image();
-  catImg.src = source;
-  cat.appendChild(catImg);
-  return cat;
-}
-
-const cat1tracker = createCatImage(cat1);
-const cat2tracker = createCatImage(cat2);
-const cat3tracker = createCatImage(cat3);
-const cat4tracker = createCatImage(cat4);
-const cat5tracker = createCatImage(cat5);
-
-catTracker.append(
-  cat1tracker,
-  cat2tracker,
-  cat3tracker,
-  cat4tracker,
-  cat5tracker
-);
-
 export {
   createPlayerGameBoardDisplay,
   createCompGameBoardDisplay,
   addCatImg,
   applyHitImage,
+  endGameScreen,
 };
