@@ -148,4 +148,4 @@ function createCompGameBoard() {
   return Object.assign(gameBoard, cellAssessment(gameBoard), computerPlaceCats(gameBoard));;
 }
 
-export { createPlayerGameBoard, createCompGameBoard };
+export { createPlayerGameBoard, createCompGameBoard, createGameBoard };

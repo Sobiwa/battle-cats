@@ -519,7 +519,12 @@ h1 {
   font-size: 2rem;
 }
 
+.end-message {
+  width: 300px;
+}
+
 .play-again-button {
+  margin: 10px;
   appearance: none;
   border: none;
   font-family: inherit;

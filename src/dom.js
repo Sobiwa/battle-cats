@@ -1,11 +1,9 @@
-/* eslint-disable default-case */
 /* eslint-disable no-restricted-syntax */
+/* eslint-disable default-case */
+
 import rotateIcon from "./img/format-rotate-90.svg";
-
 import { addCatImg, appendCatImages } from "./catImg";
-
 import { compFireShot } from "./bot";
-
 import { createPlayerGameBoard, createCompGameBoard } from "./gameboard";
 
 const playerBoardContainer = document.querySelector(".player-board-container");
@@ -158,6 +156,25 @@ function endGameScreen(message) {
   document.body.appendChild(screen);
 }
 
+const loseMessages = [
+  'Aw shucks! At this rate Dr. Vetman is going to call KPS (Kitty Protective Services).',
+  'Oh well! More to love, right?',
+  'Sodium overload! Better luck next time.',
+  'You lose! How in the world do your cats eat so many cheese balls anyway?',
+  'Welp! There goes your cats\' diets!', 
+  'Hmm, I wonder how much it is for one of those cat treadmills...',
+  'They\'re not fat! They just have a lot of fur!'
+];
+
+const winMessages = [
+  'Congrats! Your cats are looking THIN compared to your neighbor\'s',
+  'Dr. Vetman has bigger cats to worry about now!',
+  'Yeehaw! Maybe next time your neighbor will think twice!',
+  'Nice aim! You must\'ve thrown cheese balls before!',
+  'This might be your greatest accomplishment.',
+  'Victory! But seriously, too many cheese balls is probably pretty bad for cats.',
+  'Winner, winner, kitty dinner!'
+];
 function compRetaliation(playerBoard) {
   const target = compFireShot(playerBoard);
   playerBoard.takeAttack(target);
@@ -165,7 +182,7 @@ function compRetaliation(playerBoard) {
   const domCell = document.querySelector(dataID);
   applyHitImage(domCell, playerBoard, target);
   if (playerBoard.checkForWin()) {
-    endGameScreen("Aw shucks! Foiled yet again by your dastardly neighbor!");
+    endGameScreen(loseMessages[Math.floor(Math.random() * loseMessages.length)]);
   }
 }
 
@@ -194,7 +211,7 @@ function createCompGameBoardDisplay(boardData, oppBoardData) {
               }, 200);
             });
             if (boardData.checkForWin()) {
-              endGameScreen("Congrats! Now all your neighbors will know your neighbor has the fattest cats on the block!");
+              endGameScreen(winMessages[Math.floor(Math.random() * winMessages.length)]);
               return;
             }
           }
