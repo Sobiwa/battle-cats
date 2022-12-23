@@ -1,27 +1,35 @@
 /* eslint-disable default-case */
 /* eslint-disable no-restricted-syntax */
-import cat1 from "./img/big-stretch.svg";
-import cat2 from "./img/cat2.svg";
-import cat3 from "./img/walk.svg";
-import cat4 from "./img/quasi-loaf2.svg";
-import cat5 from "./img/lesRoll.svg";
 import rotateIcon from "./img/format-rotate-90.svg";
 
-import {
-  handleClick,
-  playerBoard,
-  compBoard,
-  getCurrentCat,
-} from "./gameboard";
+import { addCatImg, appendCatImages } from "./catImg";
 
-import { beginGame, checkForWin, compRetaliation } from "./game";
+import { compFireShot } from "./bot";
+
+import { createPlayerGameBoard, createCompGameBoard } from "./gameboard";
 
 const playerBoardContainer = document.querySelector(".player-board-container");
-const playerBoardDisplay = document.querySelector(".player-board");
 const compBoardContainer = document.querySelector(".comp-board-container");
-const compBoardDisplay = document.querySelector(".comp-board");
-
 const catTrackerContainer = document.querySelector(".cat-tracker-container");
+
+let currentPlayerBoard;
+
+function rotateCat() {
+  if (!currentPlayerBoard) return;
+  const currentCat = currentPlayerBoard.getCurrentCat();
+  if (!currentCat) return;
+  currentCat.rotate();
+  playerBoardContainer.classList.toggle("horizontal");
+}
+
+const rotateButton = document.createElement("button");
+const rotateImg = new Image();
+rotateImg.src = rotateIcon;
+rotateButton.classList.add("rotate-button");
+rotateButton.appendChild(rotateImg);
+rotateButton.addEventListener("click", () => {
+  rotateCat();
+});
 
 function createCatTracker() {
   const catTrackerDiv = document.createElement("div");
@@ -35,92 +43,6 @@ function createCatTracker() {
     }
   }
   return catTrackerDiv;
-}
-
-function createCatImage(source) {
-  const catImg = new Image();
-  catImg.src = source;
-  return catImg;
-}
-
-function appendCatImages() {
-  const first = document.querySelector(`[data-cell='0-0']`);
-  const second = document.querySelector('[data-cell="0-1"]');
-  const third = document.querySelector('[data-cell="0-2"]');
-  const fourth = document.querySelector('[data-cell="0-3"]');
-  const fifth = document.querySelector('[data-cell="2-3"]');
-  first.append(createCatImage(cat1));
-  first.classList.add("cat-tracker-first");
-  second.append(createCatImage(cat2));
-  second.classList.add("cat-tracker-second");
-  third.append(createCatImage(cat3));
-  third.classList.add("cat-tracker-third");
-  fourth.append(createCatImage(cat4));
-  fourth.classList.add("cat-tracker-fourth");
-  fifth.append(createCatImage(cat5));
-  fifth.classList.add("cat-tracker-fifth");
-}
-
-const catTracker = createCatTracker();
-catTrackerContainer.append(catTracker);
-appendCatImages();
-
-function rotateCat() {
-  const currentCat = getCurrentCat();
-  if (!currentCat) return;
-  currentCat.rotate();
-  playerBoardDisplay.classList.toggle("horizontal");
-}
-
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Shift") {
-    rotateCat();
-  }
-});
-
-const rotateButton = document.createElement("button");
-const rotateImg = new Image();
-rotateImg.src = rotateIcon;
-rotateButton.classList.add("rotate-button");
-rotateButton.appendChild(rotateImg);
-rotateButton.addEventListener("click", () => {
-  rotateCat();
-});
-playerBoardContainer.appendChild(rotateButton);
-
-function addCatImg(currentCat, hidden) {
-  const catImg = new Image();
-  catImg.classList.add("cat-img");
-  switch (currentCat.type) {
-    case "big stretch":
-      catImg.src = cat1;
-      catImg.classList.add("cat1");
-      playerBoardDisplay.className = "player-board cat-two";
-      break;
-    case "downward cat":
-      catImg.src = cat2;
-      catImg.classList.add("cat2");
-      playerBoardDisplay.className = "player-board cat-three";
-      break;
-    case "stuff strutter":
-      catImg.src = cat3;
-      catImg.classList.add("cat3");
-      playerBoardDisplay.className = "player-board cat-four";
-      break;
-    case "quasi loaf":
-      catImg.src = cat4;
-      catImg.classList.add("cat4");
-      playerBoardDisplay.className = "player-board cat-five";
-      break;
-    case "compact kitty":
-      catImg.src = cat5;
-      catImg.classList.add("cat5");
-      playerBoardDisplay.className = "player-board";
-  }
-  if (currentCat.orientation === "horizontal") {
-    catImg.classList.add("horizontal-cat");
-  }
-  return catImg;
 }
 
 function updateCatTracker(cat) {
@@ -153,10 +75,69 @@ function applyHitImage(target, boardID, coord) {
   target.classList.add("attacked");
   if (boardID.board[`[${coord}]`].occupiedBy) {
     target.classList.add("occupied");
-    if (boardID === compBoard) {
+    if (boardID.comp) {
       updateCatTracker(boardID.board[`[${coord}]`].occupiedBy);
     }
   }
+}
+
+function shrinkSize() {
+  const board = document.querySelector('.comp-board')
+  const originalSize = board.offsetWidth;
+  const windowWidth = window.innerWidth;
+  return (windowWidth - originalSize) / 2.3 / originalSize;
+}
+
+function setShrinkScale(board) {
+  document.documentElement.style.setProperty(
+    "--shrink-scale",
+    `min(1, ${shrinkSize(board)})`
+  );
+}
+
+function hoverEffect(cat) {
+  const prefix = "player-board";
+  let suffix;
+  switch (cat.type) {
+    case "big stretch":
+      suffix = "cat-two";
+      break;
+    case "downward cat":
+      suffix = "cat-three";
+      break;
+    case "stuff strutter":
+      suffix = "cat-four";
+      break;
+    case "quasi loaf":
+      suffix = "cat-five";
+      break;
+    default:
+      suffix = "";
+      break;
+  }
+  return `${prefix} ${suffix}`;
+}
+
+function startGame() {
+  const playerBoard = createPlayerGameBoard();
+  const compBoard = createCompGameBoard();
+  populateDisplay(playerBoard, compBoard);
+}
+
+function removeChildren(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
+function clearPage() {
+  currentPlayerBoard = 0;
+  window.removeEventListener('resize', setShrinkScale);
+  playerBoardContainer.classList.remove('shrink');
+  removeChildren(playerBoardContainer);
+  removeChildren(compBoardContainer);
+  removeChildren(catTrackerContainer);
+  catTrackerContainer.style.visibility = 'hidden';
 }
 
 function endGameScreen(message) {
@@ -168,85 +149,118 @@ function endGameScreen(message) {
   const playAgainButton = document.createElement("button");
   playAgainButton.classList.add("play-again-button");
   playAgainButton.textContent = "play again";
+  playAgainButton.addEventListener("click", () => {
+    screen.remove();
+    clearPage();
+    startGame();
+  });
   screen.append(endMessage, playAgainButton);
   document.body.appendChild(screen);
 }
 
-function createCompGameBoardDisplay() {
-  for (const coord of Object.values(compBoard.board)) {
+function compRetaliation(playerBoard) {
+  const target = compFireShot(playerBoard);
+  playerBoard.takeAttack(target);
+  const dataID = `[data-coord='${target}']`;
+  const domCell = document.querySelector(dataID);
+  applyHitImage(domCell, playerBoard, target);
+  if (playerBoard.checkForWin()) {
+    endGameScreen("Aw shucks! Foiled yet again by your dastardly neighbor!");
+  }
+}
+
+function createCompGameBoardDisplay(boardData, oppBoardData) {
+  const compBoardDisplay = document.createElement("div");
+  compBoardDisplay.classList.add("comp-board");
+
+  for (const coord of Object.values(boardData.board)) {
     const cell = document.createElement("div");
     cell.classList.add("grid-cell");
     cell.dataset.compCoord = coord.coordinates;
     cell.addEventListener("click", () => {
       if (!coord.attacked) {
-        compBoard.takeAttack(coord.coordinates);
-        applyHitImage(cell, compBoard, coord.coordinates);
+        boardData.takeAttack(coord.coordinates);
+        applyHitImage(cell, boardData, coord.coordinates);
         if (coord.occupiedBy) {
           if (coord.occupiedBy.isSunk()) {
-            coord.occupiedBy.domElement.classList.remove('hidden');
-            if (checkForWin() === "player wins") {
-              endGameScreen("player wins");
+            const cat = coord.occupiedBy;
+            cat.domElement.classList.remove("hidden");
+            cat.coordHit.forEach((spot) => {
+              const domEl = document.querySelector(
+                `[data-comp-coord='${spot}']`
+              );
+              setTimeout(() => {
+                domEl.classList.add("consume");
+              }, 200);
+            });
+            if (boardData.checkForWin()) {
+              endGameScreen("Congrats! Now all your neighbors will know your neighbor has the fattest cats on the block!");
               return;
             }
           }
         }
-        compRetaliation();
+        compRetaliation(oppBoardData);
       }
     });
     compBoardDisplay.appendChild(cell);
   }
+  compBoardContainer.appendChild(compBoardDisplay);
 }
 
-function shrinkSize() {
-  const originalSize = compBoardDisplay.offsetWidth;
-  const windowWidth = window.innerWidth;
-  return (windowWidth - originalSize) / 2.3 / originalSize;
-}
-
-window.addEventListener("resize", () => {
-  document.documentElement.style.setProperty(
-    "--shrink-scale",
-    `min(1, ${shrinkSize()})`
-  );
-});
-
-function createPlayerGameBoardDisplay() {
-  for (const coord of Object.values(playerBoard.board)) {
+function createPlayerGameBoardDisplay(playerBoardData, compBoardData) {
+  currentPlayerBoard = playerBoardData;
+  const playerBoardDisplay = document.createElement("div");
+  playerBoardDisplay.classList.add("player-board");
+  playerBoardDisplay.classList.add("cat-one");
+  for (const coord of Object.values(playerBoardData.board)) {
     const spot = document.createElement("div");
     spot.classList.add("grid-cell");
     spot.dataset.coord = coord.coordinates;
     spot.addEventListener("click", () => {
-      const currentCat = getCurrentCat();
+      const currentCat = playerBoardData.getCurrentCat();
       if (currentCat === null) return;
-      const coordArray = playerBoard.getCoordinates(
+      const coordArray = playerBoardData.getCoordinates(
         coord.coordinates,
         currentCat
       );
       if (coordArray) {
-        handleClick(coordArray);
+        playerBoardData.placeCat(coordArray, currentCat);
+        playerBoardData.catAdded();
+        playerBoardDisplay.className = hoverEffect(currentCat);
+        playerBoardContainer.className = 'player-board-container';
         spot.appendChild(addCatImg(currentCat));
         if (currentCat.type === "compact kitty") {
           playerBoardContainer.removeChild(rotateButton);
           playerBoardContainer.classList.add("shrink");
           compBoardContainer.style.display = "flex";
-          createCompGameBoardDisplay();
+          createCompGameBoardDisplay(compBoardData, playerBoardData);
           document.documentElement.style.setProperty(
             "--shrink-scale",
             `min(1, ${shrinkSize()})`
           );
+          window.addEventListener("resize", setShrinkScale);
           catTrackerContainer.style.visibility = "visible";
-          beginGame();
+          compBoardData.compPlaceCats();
         }
       }
     });
     playerBoardDisplay.appendChild(spot);
   }
+  playerBoardContainer.appendChild(playerBoardDisplay);
 }
 
-export {
-  createPlayerGameBoardDisplay,
-  createCompGameBoardDisplay,
-  addCatImg,
-  applyHitImage,
-  endGameScreen,
-};
+function populateDisplay(playerBoardData, compBoardData) {
+  const catTracker = createCatTracker();
+  catTrackerContainer.append(catTracker);
+  appendCatImages();
+  createPlayerGameBoardDisplay(playerBoardData, compBoardData);
+  playerBoardContainer.appendChild(rotateButton);
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Shift") {
+    rotateCat();
+  }
+});
+
+export { startGame };

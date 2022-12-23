@@ -1,31 +1,4 @@
 /* eslint-disable no-plusplus */
-import { createCats } from "./cat";
-import { compBoard } from "./gameboard";
-import { addCatImg } from './dom';
-
-function randomIndex(array) {
-  return array[Math.floor(array.length * Math.random())];
-}
-
-const compCats = createCats();
-
-function compPlaceCats() {
-  compCats.forEach((cat) => {
-    cat.randomizeOrientation();
-    const potentialPlacements = compBoard.determineRealEstate(cat);
-    const targetSpace = randomIndex(potentialPlacements);
-    const arrayOfCoord = compBoard.getCoordinates(
-      targetSpace,
-      cat
-    );
-    compBoard.placeCat(arrayOfCoord, cat);
-    const domSpot = document.querySelector(`[data-comp-coord='${targetSpace}'`);
-    const catImg = addCatImg(cat);
-    catImg.classList.add('hidden');
-    domSpot.appendChild(catImg);
-    cat.setDomElement(catImg);
-  });
-}
 
 function determineOrientation(array) {
   return array[0][0] === array[1][0] ? "y" : "x";
@@ -83,10 +56,10 @@ function assessAdjacentCoordinates(start, boardID, cat, axis, direction) {
   return allDir.filter((opt) => opt !== null);
 }
 
-function compFireShot(opponentBoard, opponentCats) {
+function compFireShot(opponentBoard) {
   const woundedTargets = [];
   let possibleHits;
-  opponentCats.forEach((cat) => {
+  opponentBoard.cats.forEach((cat) => {
     if (cat.hits > 0 && !cat.isSunk()) {
       woundedTargets.push(cat);
     }
@@ -119,4 +92,4 @@ function compFireShot(opponentBoard, opponentCats) {
   return possibleHits[Math.floor(possibleHits.length * Math.random())];
 }
 
-export { assessAdjacentCoordinates, compPlaceCats, compFireShot, compCats };
+export { assessAdjacentCoordinates, compFireShot };

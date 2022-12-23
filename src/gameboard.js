@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
-import { createCats } from "./cat";
+import { createCats } from './cat';
+import { addCatImg } from './catImg';
 
 const place = (state) => ({
   placeCat: (coordinates, cat) => {
@@ -43,6 +44,19 @@ const getCoord = (state) => ({
   },
 });
 
+const trackCatsAdded = (state) => ({
+  catAdded: () => {
+    state.catsAdded += 1;
+  }
+});
+
+const currentCat = (state) => ({
+  getCurrentCat: () => {
+    if (state.catsAdded >= 5) return null;
+    return state.cats[state.catsAdded];
+  }
+})
+
 const cellAssessment = (state) => ({
   determineRealEstate: ({ length, orientation }) => {
     const limit = 10 - length;
@@ -66,6 +80,30 @@ const cellAssessment = (state) => ({
   },
 });
 
+function randomIndex(array) {
+  return array[Math.floor(array.length * Math.random())];
+}
+
+const computerPlaceCats = (state) => ({
+compPlaceCats: () => {
+  state.cats.forEach((cat) => {
+    cat.randomizeOrientation();
+    const potentialPlacements = state.determineRealEstate(cat);
+    const targetSpace = randomIndex(potentialPlacements);
+    const arrayOfCoord = state.getCoordinates(
+      targetSpace,
+      cat
+    );
+    state.placeCat(arrayOfCoord, cat);
+    const domSpot = document.querySelector(`[data-comp-coord='${targetSpace}'`);
+    const catImg = addCatImg(cat);
+    catImg.classList.add('hidden');
+    domSpot.appendChild(catImg);
+    cat.setDomElement(catImg);
+  });
+}
+})
+
 function createSpot(x, y) {
   return {
     coordinates: [x, y],
@@ -74,9 +112,14 @@ function createSpot(x, y) {
   };
 }
 
+const winCheck = (state) => ({
+  checkForWin: () => state.cats.every((cat) => cat.isSunk()),
+});
+
 function createGameBoard() {
   const gameBoard = {};
   gameBoard.board = {};
+  gameBoard.cats = createCats();
   for (let y = 0; y < 10; y += 1) {
     for (let x = 0; x < 10; x += 1) {
       gameBoard.board[`[${x},${y}]`] = createSpot(x, y);
@@ -87,33 +130,22 @@ function createGameBoard() {
     place(gameBoard),
     receiveAttack(gameBoard),
     coordInvalid(gameBoard),
-    getCoord(gameBoard)
+    getCoord(gameBoard),
+    winCheck(gameBoard),
   );
+}
+
+function createPlayerGameBoard() {
+  const gameBoard = createGameBoard();
+  gameBoard.comp = false;
+  gameBoard.catsAdded = 0;
+  return Object.assign(gameBoard, trackCatsAdded(gameBoard), currentCat(gameBoard));
 }
 
 function createCompGameBoard() {
   const gameBoard = createGameBoard();
-  return Object.assign(gameBoard, cellAssessment(gameBoard));
+  gameBoard.comp = true;
+  return Object.assign(gameBoard, cellAssessment(gameBoard), computerPlaceCats(gameBoard));;
 }
 
-const playerBoard = createGameBoard();
-
-const compBoard = createCompGameBoard();
-
-const playerCats = createCats();
-
-let catsPlaced = 0;
-let currentCat;
-
-function getCurrentCat() {
-  if (catsPlaced >= 5) return null;
-  return playerCats[catsPlaced];
-}
-
-function handleClick(coordinates) {
-  currentCat = getCurrentCat();
-  playerBoard.placeCat(coordinates, currentCat);
-  catsPlaced += 1;
-}
-
-export { createGameBoard, handleClick, playerBoard, compBoard, getCurrentCat, playerCats };
+export { createPlayerGameBoard, createCompGameBoard };

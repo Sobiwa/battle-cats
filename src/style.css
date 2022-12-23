@@ -16,7 +16,9 @@
   --shrunk-board: calc(var(--board-size) * var(--shrink-scale));
   /* --cat-tracker-size: calc(var(--board-size) * 0.4); */
   --cat-tracker-padding: 10px;
-  --cat-tracker-width: calc(min((calc(var(--margin) * 0.95)), 200px) - (var(--cat-tracker-padding) * 2));
+  --cat-tracker-width: calc(
+    min((calc(var(--margin) * 0.95)), 200px) - (var(--cat-tracker-padding) * 2)
+  );
   --cat-tracker-height: calc(var(var(--cat-tracker-width) * (4 / 5)));
   --cat-tracker-cell: calc(var(--cat-tracker-width) / 5);
   --margin-top: calc(((100vh - 100px) - var(--board-size)) * 0.5);
@@ -39,6 +41,70 @@ body {
   background-repeat: repeat;
   background-size: 400px;
   text-align: center;
+}
+
+.opening-screen {
+  overflow: hidden;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+  background: url("./img/grrass.jpeg");
+  background-repeat: repeat;
+  background-size: 100px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: 2s;
+}
+
+.opening-screen p {
+  background-color: #282a36bc;
+  box-sizing: border-box;
+  width: 300px;
+  padding: 30px;
+  border-radius: 30px;
+}
+
+@keyframes bounce {
+  from {
+    translate: 0;
+  }
+  to {
+    translate: 0px -10px;
+  }
+}
+
+.opening-screen button {
+  animation-name: bounce;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease-out;
+  color: whitesmoke;
+  font-family: inherit;
+  font-size: 1.5rem;
+  appearance: none;
+  border-radius: 50%;
+  border: none;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(hsl(39, 100%, 58%), hsl(39, 100%, 50%));
+  cursor: grab;
+  transition: 0.3s;
+}
+
+.opening-screen button:hover,
+.play-again-button:hover {
+  animation: none;
+  scale: 0.9;
+}
+
+.opening-screen button:active,
+.play-again-button:active {
+  scale: 0.8;
 }
 
 .title {
@@ -121,13 +187,25 @@ h1 {
   overflow: hidden;
 }
 
-.comp-board .grid-cell:hover {
+.comp-board .grid-cell:hover::after {
   box-shadow: inset 0px 0px 50px rgb(255, 123, 0);
   cursor: pointer;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
-.comp-board .grid-cell:active {
+.comp-board .grid-cell:active::after {
   box-shadow: inset 0px 0px 50px 10px rgb(255, 123, 0);
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 }
 
 .player-board .grid-cell:hover::after {
@@ -143,7 +221,9 @@ h1 {
   height: calc(var(--cell-size) * 5);
 }
 
-.player-board.horizontal.cat-one .grid-cell:hover::after {
+.player-board-container.horizontal
+  .player-board.cat-one
+  .grid-cell:hover::after {
   height: var(--cell-size);
   width: calc(var(--cell-size) * 5);
 }
@@ -153,7 +233,9 @@ h1 {
   height: calc(var(--cell-size) * 4);
 }
 
-.player-board.horizontal.cat-two .grid-cell:hover::after {
+.player-board-container.horizontal
+  .player-board.cat-two
+  .grid-cell:hover::after {
   height: var(--cell-size);
   width: calc(var(--cell-size) * 4);
 }
@@ -163,7 +245,9 @@ h1 {
   height: calc(var(--cell-size) * 3);
 }
 
-.player-board.horizontal.cat-three .grid-cell:hover::after {
+.player-board-container.horizontal
+  .player-board.cat-three
+  .grid-cell:hover::after {
   height: var(--cell-size);
   width: calc(var(--cell-size) * 3);
 }
@@ -174,8 +258,12 @@ h1 {
   height: calc(var(--cell-size) * 2);
 }
 
-.player-board.horizontal.cat-four .grid-cell:hover::after,
-.player-board.horizontal.cat-five .grid-cell:hover::after {
+.player-board-container.horizontal
+  .player-board.cat-four
+  .grid-cell:hover::after,
+.player-board-container.horizontal
+  .player-board.cat-five
+  .grid-cell:hover::after {
   height: var(--cell-size);
   width: calc(var(--cell-size) * 2);
 }
@@ -264,7 +352,13 @@ h1 {
   rotate: 0deg;
 }
 
-.grid-cell.attacked {
+.grid-cell.attacked::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
   box-shadow: inset 0px 0px 15px orange;
 }
 
@@ -284,15 +378,30 @@ h1 {
   width: calc(var(--cell-size) / 1.5);
   height: calc(var(--cell-size) / 1.5);
   background-color: orange;
+  transition: 1s;
+}
+
+.grid-cell.attacked.occupied.consume::before {
+  scale: 0;
 }
 
 .rotate-button {
+  background-color: hsl(39, 100%, 50%);
   appearance: none;
   border: none;
   width: 30px;
   height: 30px;
   border-radius: 50%;
   cursor: pointer;
+  margin: 5px;
+}
+
+.rotate-button:hover {
+  background-color: hsl(39, 100%, 60%);
+}
+
+.rotate-button:active {
+  background-color: hsl(39, 100%, 70%);
 }
 
 .comp-board-container {
@@ -340,7 +449,7 @@ h1 {
 
 .cat-tracker div::after {
   position: absolute;
-  content: '';
+  content: "";
   background-color: orange;
   width: 40%;
   height: 40%;
@@ -352,7 +461,19 @@ h1 {
   transition: 0.5s;
 }
 
-.cat-tracker div.cat-tracker-hit::after {
+.cat-tracker div::before {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background-color: rgba(201, 201, 201, 0.54);
+  opacity: 0;
+  left: 0;
+}
+
+.cat-tracker div.cat-tracker-hit::after,
+.cat-tracker div.cat-tracker-hit::before {
   opacity: 1;
 }
 
@@ -396,6 +517,18 @@ h1 {
   align-items: center;
   justify-content: center;
   font-size: 2rem;
+}
+
+.play-again-button {
+  appearance: none;
+  border: none;
+  font-family: inherit;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(hsl(39, 100%, 58%), hsl(39, 100%, 50%));
+  cursor: grab;
+  transition: 0.3s;
 }
 
 @media only screen and (max-width: 900px) {
