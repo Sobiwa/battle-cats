@@ -80,7 +80,7 @@ function applyHitImage(target, boardID, coord) {
 }
 
 function shrinkSize() {
-  const board = document.querySelector('.comp-board')
+  const board = document.querySelector(".comp-board");
   const originalSize = board.offsetWidth;
   const windowWidth = window.innerWidth;
   return (windowWidth - originalSize) / 2.3 / originalSize;
@@ -130,20 +130,44 @@ function removeChildren(element) {
 
 function clearPage() {
   currentPlayerBoard = 0;
-  window.removeEventListener('resize', setShrinkScale);
-  playerBoardContainer.classList.remove('shrink');
+  window.removeEventListener("resize", setShrinkScale);
+  playerBoardContainer.classList.remove("shrink");
   removeChildren(playerBoardContainer);
   removeChildren(compBoardContainer);
   removeChildren(catTrackerContainer);
-  catTrackerContainer.style.visibility = 'hidden';
+  catTrackerContainer.style.visibility = "hidden";
 }
 
-function endGameScreen(message) {
+function endGameScreen(win) {
+  const loseMessages = [
+    "Aw shucks! At this rate Dr. Vetman is going to call KPS (Kitty Protective Services).",
+    "Oh well! More to love, right?",
+    "Sodium overload! Better luck next time.",
+    "You lose! How in the world do your cats eat so many cheese balls anyway?",
+    "Welp! There goes your cats' diets!",
+    "Hmm, I wonder how much it is for one of those cat treadmills...",
+    "They're not fat! They just have a lot of fur!",
+  ];
+
+  const winMessages = [
+    "Congrats! Your cats are looking THIN compared to your neighbor's",
+    "Dr. Vetman has bigger cats to worry about now!",
+    "Yeehaw! Maybe next time your neighbor will think twice!",
+    "Nice aim! You must've thrown cheese balls before!",
+    "This might be your greatest accomplishment.",
+    "Victory! But seriously, too many cheese balls is probably pretty bad for cats.",
+    "Winner, winner, kitty dinner!",
+  ];
+  const array = win ? winMessages : loseMessages;
   const screen = document.createElement("div");
+  screen.style.opacity = 0;
   screen.classList.add("end-game");
+  const verdict = document.createElement('div');
+  verdict.classList.add('verdict');
+  verdict.textContent = win ? 'Player wins! :)' : 'Neighbor Wins! :('
   const endMessage = document.createElement("div");
   endMessage.classList.add("end-message");
-  endMessage.textContent = message;
+  endMessage.textContent = array[Math.floor(Math.random() * array.length)];
   const playAgainButton = document.createElement("button");
   playAgainButton.classList.add("play-again-button");
   playAgainButton.textContent = "play again";
@@ -152,29 +176,13 @@ function endGameScreen(message) {
     clearPage();
     startGame();
   });
-  screen.append(endMessage, playAgainButton);
+  screen.append(verdict, endMessage, playAgainButton);
   document.body.appendChild(screen);
+  setTimeout(() => {
+    screen.style.opacity = 1;
+  }, 100);
 }
 
-const loseMessages = [
-  'Aw shucks! At this rate Dr. Vetman is going to call KPS (Kitty Protective Services).',
-  'Oh well! More to love, right?',
-  'Sodium overload! Better luck next time.',
-  'You lose! How in the world do your cats eat so many cheese balls anyway?',
-  'Welp! There goes your cats\' diets!', 
-  'Hmm, I wonder how much it is for one of those cat treadmills...',
-  'They\'re not fat! They just have a lot of fur!'
-];
-
-const winMessages = [
-  'Congrats! Your cats are looking THIN compared to your neighbor\'s',
-  'Dr. Vetman has bigger cats to worry about now!',
-  'Yeehaw! Maybe next time your neighbor will think twice!',
-  'Nice aim! You must\'ve thrown cheese balls before!',
-  'This might be your greatest accomplishment.',
-  'Victory! But seriously, too many cheese balls is probably pretty bad for cats.',
-  'Winner, winner, kitty dinner!'
-];
 function compRetaliation(playerBoard) {
   const target = compFireShot(playerBoard);
   playerBoard.takeAttack(target);
@@ -182,7 +190,7 @@ function compRetaliation(playerBoard) {
   const domCell = document.querySelector(dataID);
   applyHitImage(domCell, playerBoard, target);
   if (playerBoard.checkForWin()) {
-    endGameScreen(loseMessages[Math.floor(Math.random() * loseMessages.length)]);
+    endGameScreen(false);
   }
 }
 
@@ -211,7 +219,7 @@ function createCompGameBoardDisplay(boardData, oppBoardData) {
               }, 200);
             });
             if (boardData.checkForWin()) {
-              endGameScreen(winMessages[Math.floor(Math.random() * winMessages.length)]);
+              endGameScreen(true);
               return;
             }
           }
@@ -244,7 +252,7 @@ function createPlayerGameBoardDisplay(playerBoardData, compBoardData) {
         playerBoardData.placeCat(coordArray, currentCat);
         playerBoardData.catAdded();
         playerBoardDisplay.className = hoverEffect(currentCat);
-        playerBoardContainer.className = 'player-board-container';
+        playerBoardContainer.className = "player-board-container";
         spot.appendChild(addCatImg(currentCat));
         if (currentCat.type === "compact kitty") {
           playerBoardContainer.removeChild(rotateButton);

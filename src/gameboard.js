@@ -59,7 +59,7 @@ const currentCat = (state) => ({
 
 const cellAssessment = (state) => ({
   determineRealEstate: ({ length, orientation }) => {
-    const limit = 10 - length;
+    const limit = 11 - length;
     const array = [];
     let x = 10;
     let y = 10;

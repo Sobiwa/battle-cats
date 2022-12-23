@@ -56,6 +56,48 @@ function assessAdjacentCoordinates(start, boardID, cat, axis, direction) {
   return allDir.filter((opt) => opt !== null);
 }
 
+function addPoints(oppBoard, coord, direction, max, points = -1) {
+  const cell = oppBoard.board[`[${coord}]`];
+  if (
+    points === max - 1 ||
+    coord.some((num) => num > 9 || num < 0) ||
+    cell.attacked
+  )
+    return points;
+  const [x, y] = coord;
+  let newCoord;
+  switch (direction) {
+    case "up":
+      newCoord = [x, y + 1];
+      break;
+    case "right":
+      newCoord = [x + 1, y];
+      break;
+    case "down":
+      newCoord = [x, y - 1];
+      break;
+    case "left":
+      newCoord = [x - 1, y];
+      break;
+    default:
+      break;
+  }
+  return addPoints(oppBoard, newCoord, direction, max, points + 1);
+}
+
+function gradeSpot(opponentBoard, coord) {
+  const lengthOfLongestCatRemaining = opponentBoard.cats.reduce(
+    (a, b) => (!b.isSunk() && b.length > a ? b.length : a),
+    0
+  );
+  return (
+    addPoints(opponentBoard, coord, "up", lengthOfLongestCatRemaining) +
+    addPoints(opponentBoard, coord, "right", lengthOfLongestCatRemaining) +
+    addPoints(opponentBoard, coord, "down", lengthOfLongestCatRemaining) +
+    addPoints(opponentBoard, coord, "left", lengthOfLongestCatRemaining)
+  );
+};
+
 function compFireShot(opponentBoard) {
   const woundedTargets = [];
   let possibleHits;
@@ -82,12 +124,26 @@ function compFireShot(opponentBoard) {
       );
     }
   } else {
-    possibleHits = [];
+     const allPossibleHits = [];
     Object.keys(opponentBoard.board).forEach((cell) => {
       if (!opponentBoard.board[cell].attacked) {
-        possibleHits.push(opponentBoard.board[cell].coordinates);
+        allPossibleHits.push(opponentBoard.board[cell].coordinates);
       }
     });
+    let topScore = 0;
+    possibleHits = allPossibleHits.reduce((a, b) => {
+      const spotGrade = gradeSpot(opponentBoard, b);
+      console.log(spotGrade, topScore);
+      if (spotGrade > topScore) {
+        topScore = spotGrade;
+        return [b];
+      }
+      if (spotGrade === topScore) {
+        a.push(b);
+      }
+      return a
+    }, []);
+    console.log(possibleHits);
   }
   return possibleHits[Math.floor(possibleHits.length * Math.random())];
 }
