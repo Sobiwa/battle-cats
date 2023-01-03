@@ -33,7 +33,7 @@ const getCoord = (state) => ({
     const array = [];
     const [x, y] = coord;
     for (let i = 0; i < cat.length; i += 1) {
-      if (cat.orientation === "vertical") {
+      if (cat.orientation === 'vertical') {
         array.push([x, y + i]);
       } else {
         array.push([x + i, y]);
@@ -63,7 +63,7 @@ const cellAssessment = (state) => ({
     const array = [];
     let x = 10;
     let y = 10;
-    if (orientation === "vertical") {
+    if (orientation === 'vertical') {
       y = limit;
     } else {
       x = limit;
