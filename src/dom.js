@@ -6,9 +6,9 @@ import { addCatImg, appendCatImages, setCatAnimation } from './catImg';
 import { compFireShot } from './bot';
 import { createPlayerGameBoard, createCompGameBoard } from './gameboard';
 
-import eatSoundAudio from './sound/eatSound.ogg';
-import hitAudio from './sound/hit.ogg';
-import missAudio from './sound/miss.ogg';
+import eatSoundAudio from './sound/eatSound.mp3';
+import hitAudio from './sound/hit.mp3';
+import missAudio from './sound/miss.mp3';
 
 const fullGameDisplay = document.querySelector('.full-game');
 
