@@ -161,7 +161,7 @@ function endGameScreen(win) {
     "Sodium overload! Better luck next time",
     "You lose! How in the world do your cats eat so many cheese balls anyway?",
     "Welp! There goes your cats' diets!",
-    "Hmm, I wonder how much it is for one of those cat treadmills...",
+    "Hmm, may be time to invest in one of those cat treadmills...",
     "They're not fat! They just have a lot of fur!",
   ];
 
@@ -193,7 +193,7 @@ function endGameScreen(win) {
     startGame();
   });
   screen.append(verdict, endMessage, playAgainButton);
-  document.body.appendChild(screen);
+  fullGameDisplay.appendChild(screen);
   setTimeout(() => {
     screen.style.opacity = 1;
   }, 100);
