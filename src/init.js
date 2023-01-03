@@ -1,4 +1,4 @@
-import { startGame } from './dom'
+import startGame from './dom'
 import battleCatsTheme from './sound/battle-cat-theme-one-loop.mp3';
 import battleCatsTheme2 from './sound/battle-cats-theme2.mp3';
 

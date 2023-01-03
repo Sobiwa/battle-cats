@@ -1,6 +1,5 @@
 /* eslint-disable no-restricted-syntax */
-/* eslint-disable default-case */
-
+/* eslint-disable no-use-before-define */
 import rotateIcon from './img/format-rotate-90.svg';
 import { addCatImg, appendCatImages, setCatAnimation } from './catImg';
 import { compFireShot } from './bot';
@@ -44,8 +43,8 @@ rotateButton.addEventListener('click', () => {
 function createCatTracker() {
   const catTrackerDiv = document.createElement('div');
   catTrackerDiv.classList.add('cat-tracker');
-  for (let y = 0; y < 4; y++) {
-    for (let x = 0; x < 5; x++) {
+  for (let y = 0; y < 4; y += 1) {
+    for (let x = 0; x < 5; x += 1) {
       const cell = document.createElement('div');
       const id = `${x}-${y}`;
       cell.dataset.cell = id;
@@ -74,6 +73,8 @@ function updateCatTracker(cat) {
     case 'compact kitty':
       y = 3;
       x = 2;
+      break;
+    default:
       break;
   }
   const coord = `${x + cat.hits - 1}-${y}`;
@@ -344,4 +345,4 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-export { startGame };
+export default startGame;
