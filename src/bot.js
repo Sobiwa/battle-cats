@@ -1,19 +1,19 @@
 /* eslint-disable no-plusplus */
 
 function determineOrientation(array) {
-  return array[0][0] === array[1][0] ? "y" : "x";
+  return array[0][0] === array[1][0] ? 'y' : 'x';
 }
 
 function assessAdjacentCoordinates(start, boardID, cat, axis, direction) {
   let allDir;
   const [x, y] = start;
-  const up = () => assessAdjacentCoordinates([x, y - 1], boardID, cat, "y", -1);
+  const up = () => assessAdjacentCoordinates([x, y - 1], boardID, cat, 'y', -1);
   const right = () =>
-    assessAdjacentCoordinates([x + 1, y], boardID, cat, "x", 1);
+    assessAdjacentCoordinates([x + 1, y], boardID, cat, 'x', 1);
   const down = () =>
-    assessAdjacentCoordinates([x, y + 1], boardID, cat, "y", 1);
+    assessAdjacentCoordinates([x, y + 1], boardID, cat, 'y', 1);
   const left = () =>
-    assessAdjacentCoordinates([x - 1, y], boardID, cat, "x", -1);
+    assessAdjacentCoordinates([x - 1, y], boardID, cat, 'x', -1);
 
   if (start.some((num) => num > 9 || num < 0)) return null;
 
@@ -27,7 +27,7 @@ function assessAdjacentCoordinates(start, boardID, cat, axis, direction) {
   if (!oppBoardCell.attacked) return start;
 
   if (axis) {
-    if (axis === "x") {
+    if (axis === 'x') {
       if (direction) {
         return assessAdjacentCoordinates(
           [x + 1 * direction, y],
@@ -38,7 +38,7 @@ function assessAdjacentCoordinates(start, boardID, cat, axis, direction) {
         );
       }
       allDir = [left(), right()];
-    } else if (axis === "y") {
+    } else if (axis === 'y') {
       if (direction) {
         return assessAdjacentCoordinates(
           [x, y + 1 * direction],
@@ -67,16 +67,16 @@ function addPoints(oppBoard, coord, direction, max, points = -1) {
   const [x, y] = coord;
   let newCoord;
   switch (direction) {
-    case "up":
+    case 'up':
       newCoord = [x, y + 1];
       break;
-    case "right":
+    case 'right':
       newCoord = [x + 1, y];
       break;
-    case "down":
+    case 'down':
       newCoord = [x, y - 1];
       break;
-    case "left":
+    case 'left':
       newCoord = [x - 1, y];
       break;
     default:
@@ -91,10 +91,10 @@ function gradeSpot(opponentBoard, coord) {
     0
   );
   return (
-    addPoints(opponentBoard, coord, "up", lengthOfLongestCatRemaining) +
-    addPoints(opponentBoard, coord, "right", lengthOfLongestCatRemaining) +
-    addPoints(opponentBoard, coord, "down", lengthOfLongestCatRemaining) +
-    addPoints(opponentBoard, coord, "left", lengthOfLongestCatRemaining)
+    addPoints(opponentBoard, coord, 'up', lengthOfLongestCatRemaining) +
+    addPoints(opponentBoard, coord, 'right', lengthOfLongestCatRemaining) +
+    addPoints(opponentBoard, coord, 'down', lengthOfLongestCatRemaining) +
+    addPoints(opponentBoard, coord, 'left', lengthOfLongestCatRemaining)
   );
 };
 

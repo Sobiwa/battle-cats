@@ -1,10 +1,10 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable default-case */
 
-import rotateIcon from "./img/format-rotate-90.svg";
-import { addCatImg, appendCatImages, setCatAnimation } from "./catImg";
-import { compFireShot } from "./bot";
-import { createPlayerGameBoard, createCompGameBoard } from "./gameboard";
+import rotateIcon from './img/format-rotate-90.svg';
+import { addCatImg, appendCatImages, setCatAnimation } from './catImg';
+import { compFireShot } from './bot';
+import { createPlayerGameBoard, createCompGameBoard } from './gameboard';
 
 import eatSoundAudio from './sound/eatSound.ogg';
 import hitAudio from './sound/hit.ogg';
@@ -18,9 +18,9 @@ function playSound(src, vol) {
   sound.play();
 }
 
-const playerBoardContainer = document.querySelector(".player-board-container");
-const compBoardContainer = document.querySelector(".comp-board-container");
-const catTrackerContainer = document.querySelector(".cat-tracker-container");
+const playerBoardContainer = document.querySelector('.player-board-container');
+const compBoardContainer = document.querySelector('.comp-board-container');
+const catTrackerContainer = document.querySelector('.cat-tracker-container');
 
 let currentPlayerBoard;
 
@@ -29,24 +29,24 @@ function rotateCat() {
   const currentCat = currentPlayerBoard.getCurrentCat();
   if (!currentCat) return;
   currentCat.rotate();
-  playerBoardContainer.classList.toggle("horizontal");
+  playerBoardContainer.classList.toggle('horizontal');
 }
 
-const rotateButton = document.createElement("button");
+const rotateButton = document.createElement('button');
 const rotateImg = new Image();
 rotateImg.src = rotateIcon;
-rotateButton.classList.add("rotate-button");
+rotateButton.classList.add('rotate-button');
 rotateButton.appendChild(rotateImg);
-rotateButton.addEventListener("click", () => {
+rotateButton.addEventListener('click', () => {
   rotateCat();
 });
 
 function createCatTracker() {
-  const catTrackerDiv = document.createElement("div");
-  catTrackerDiv.classList.add("cat-tracker");
+  const catTrackerDiv = document.createElement('div');
+  catTrackerDiv.classList.add('cat-tracker');
   for (let y = 0; y < 4; y++) {
     for (let x = 0; x < 5; x++) {
-      const cell = document.createElement("div");
+      const cell = document.createElement('div');
       const id = `${x}-${y}`;
       cell.dataset.cell = id;
       catTrackerDiv.appendChild(cell);
@@ -59,32 +59,32 @@ function updateCatTracker(cat) {
   let y;
   let x = 0;
   switch (cat.type) {
-    case "big stretch":
+    case 'big stretch':
       y = 0;
       break;
-    case "downward cat":
+    case 'downward cat':
       y = 1;
       break;
-    case "stuff strutter":
+    case 'stuff strutter':
       y = 2;
       break;
-    case "quasi loaf":
+    case 'quasi loaf':
       y = 3;
       break;
-    case "compact kitty":
+    case 'compact kitty':
       y = 3;
       x = 2;
       break;
   }
   const coord = `${x + cat.hits - 1}-${y}`;
   const domTarget = document.querySelector(`[data-cell='${coord}']`);
-  domTarget.classList.add("cat-tracker-hit");
+  domTarget.classList.add('cat-tracker-hit');
 }
 
 function applyHitImage(target, boardID, coord) {
-  target.classList.add("attacked");
+  target.classList.add('attacked');
   if (boardID.board[`[${coord}]`].occupiedBy) {
-    target.classList.add("occupied");
+    target.classList.add('occupied');
     if (boardID.comp) {
       updateCatTracker(boardID.board[`[${coord}]`].occupiedBy);
     }
@@ -92,7 +92,7 @@ function applyHitImage(target, boardID, coord) {
 }
 
 function shrinkSize() {
-  const board = document.querySelector(".comp-board");
+  const board = document.querySelector('.comp-board');
   const originalSize = board.offsetWidth;
   const windowWidth = window.innerWidth;
   return (windowWidth - originalSize) / 2.3 / originalSize;
@@ -100,29 +100,29 @@ function shrinkSize() {
 
 function setShrinkScale(board) {
   document.documentElement.style.setProperty(
-    "--shrink-scale",
+    '--shrink-scale',
     `min(1, ${shrinkSize(board)})`
   );
 }
 
 function hoverEffect(cat) {
-  const prefix = "player-board";
+  const prefix = 'player-board';
   let suffix;
   switch (cat.type) {
-    case "big stretch":
-      suffix = "cat-two";
+    case 'big stretch':
+      suffix = 'cat-two';
       break;
-    case "downward cat":
-      suffix = "cat-three";
+    case 'downward cat':
+      suffix = 'cat-three';
       break;
-    case "stuff strutter":
-      suffix = "cat-four";
+    case 'stuff strutter':
+      suffix = 'cat-four';
       break;
-    case "quasi loaf":
-      suffix = "cat-five";
+    case 'quasi loaf':
+      suffix = 'cat-five';
       break;
     default:
-      suffix = "";
+      suffix = '';
       break;
   }
   return `${prefix} ${suffix}`;
@@ -142,12 +142,12 @@ function removeChildren(element) {
 
 function clearPage() {
   currentPlayerBoard = 0;
-  window.removeEventListener("resize", setShrinkScale);
-  playerBoardContainer.classList.remove("shrink");
+  window.removeEventListener('resize', setShrinkScale);
+  playerBoardContainer.classList.remove('shrink');
   removeChildren(playerBoardContainer);
   removeChildren(compBoardContainer);
   removeChildren(catTrackerContainer);
-  catTrackerContainer.style.visibility = "hidden";
+  catTrackerContainer.style.visibility = 'hidden';
   const catAnimations = document.querySelectorAll('.cat-animation');
   catAnimations.forEach((catAni) => {
     catAni.remove();
@@ -156,38 +156,38 @@ function clearPage() {
 
 function endGameScreen(win) {
   const loseMessages = [
-    "Aw shucks! At this rate Dr. Vetman is going to call KPS (Kitty Protective Services)",
-    "Oh well! More to love, right?",
-    "Sodium overload! Better luck next time",
-    "You lose! How in the world do your cats eat so many cheese balls anyway?",
-    "Welp! There goes your cats' diets!",
-    "Hmm, may be time to invest in one of those cat treadmills...",
-    "They're not fat! They just have a lot of fur!",
+    'Aw shucks! At this rate Dr. Vetman is going to call KPS (Kitty Protective Services)',
+    'Oh well! More to love, right?',
+    'Sodium overload! Better luck next time',
+    'You lose! How in the world do your cats eat so many cheese balls anyway?',
+    'Welp! There goes your cats\' diets!',
+    'Hmm, may be time to invest in one of those cat treadmills...',
+    'They\'re not fat! They just have a lot of fur!',
   ];
 
   const winMessages = [
-    "Congrats! Your cats are looking THIN compared to your neighbor's",
-    "Dr. Vetman has bigger cats to worry about now!",
-    "Yeehaw! Maybe next time your neighbor will think twice!",
-    "Nice aim! You must've thrown cheese balls before!",
-    "This might be your greatest accomplishment",
-    "Victory! But seriously, too many cheese balls is probably pretty bad for cats",
-    "Winner, winner, kitty dinner!",
+    'Congrats! Your cats are looking THIN compared to your neighbor\'s',
+    'Dr. Vetman has bigger cats to worry about now!',
+    'Yeehaw! Maybe next time your neighbor will think twice!',
+    'Nice aim! You must\'ve thrown cheese balls before!',
+    'This might be your greatest accomplishment',
+    'Victory! But seriously, too many cheese balls is probably pretty bad for cats',
+    'Winner, winner, kitty dinner!',
   ];
   const array = win ? winMessages : loseMessages;
-  const screen = document.createElement("div");
+  const screen = document.createElement('div');
   screen.style.opacity = 0;
-  screen.classList.add("end-game");
+  screen.classList.add('end-game');
   const verdict = document.createElement('div');
   verdict.classList.add('verdict');
   verdict.textContent = win ? 'Player wins! :)' : 'Neighbor Wins! :('
-  const endMessage = document.createElement("div");
-  endMessage.classList.add("end-message");
+  const endMessage = document.createElement('div');
+  endMessage.classList.add('end-message');
   endMessage.textContent = array[Math.floor(Math.random() * array.length)];
-  const playAgainButton = document.createElement("button");
-  playAgainButton.classList.add("play-again-button");
-  playAgainButton.textContent = "play again";
-  playAgainButton.addEventListener("click", () => {
+  const playAgainButton = document.createElement('button');
+  playAgainButton.classList.add('play-again-button');
+  playAgainButton.textContent = 'play again';
+  playAgainButton.addEventListener('click', () => {
     screen.remove();
     clearPage();
     startGame();
@@ -241,14 +241,14 @@ function compRetaliation(playerBoard) {
 }
 
 function createCompGameBoardDisplay(boardData, oppBoardData) {
-  const compBoardDisplay = document.createElement("div");
-  compBoardDisplay.classList.add("comp-board");
+  const compBoardDisplay = document.createElement('div');
+  compBoardDisplay.classList.add('comp-board');
 
   for (const coord of Object.values(boardData.board)) {
-    const cell = document.createElement("div");
-    cell.classList.add("grid-cell");
+    const cell = document.createElement('div');
+    cell.classList.add('grid-cell');
     cell.dataset.compCoord = coord.coordinates;
-    cell.addEventListener("click", () => {
+    cell.addEventListener('click', () => {
       if (!coord.attacked) {
         boardData.takeAttack(coord.coordinates);
         applyHitImage(cell, boardData, coord.coordinates);
@@ -257,13 +257,13 @@ function createCompGameBoardDisplay(boardData, oppBoardData) {
           if (coord.occupiedBy.isSunk()) {
             playSound(eatSoundAudio, 0.5);
             const cat = coord.occupiedBy;
-            cat.domElement.classList.remove("hidden");
+            cat.domElement.classList.remove('hidden');
             cat.coordHit.forEach((spot) => {
               const domEl = document.querySelector(
                 `[data-comp-coord='${spot}']`
               );
               setTimeout(() => {
-                domEl.classList.add("consume");
+                domEl.classList.add('consume');
               }, 200);
             });
             if (boardData.checkForWin()) {
@@ -289,14 +289,14 @@ function prepareCatAnimation(cat) {
 
 function createPlayerGameBoardDisplay(playerBoardData, compBoardData) {
   currentPlayerBoard = playerBoardData;
-  const playerBoardDisplay = document.createElement("div");
-  playerBoardDisplay.classList.add("player-board");
-  playerBoardDisplay.classList.add("cat-one");
+  const playerBoardDisplay = document.createElement('div');
+  playerBoardDisplay.classList.add('player-board');
+  playerBoardDisplay.classList.add('cat-one');
   for (const coord of Object.values(playerBoardData.board)) {
-    const spot = document.createElement("div");
-    spot.classList.add("grid-cell");
+    const spot = document.createElement('div');
+    spot.classList.add('grid-cell');
     spot.dataset.coord = coord.coordinates;
-    spot.addEventListener("click", () => {
+    spot.addEventListener('click', () => {
       const currentCat = playerBoardData.getCurrentCat();
       if (currentCat === null) return;
       const coordArray = playerBoardData.getCoordinates(
@@ -308,19 +308,19 @@ function createPlayerGameBoardDisplay(playerBoardData, compBoardData) {
         playerBoardData.placeCat(coordArray, currentCat);
         playerBoardData.catAdded();
         playerBoardDisplay.className = hoverEffect(currentCat);
-        playerBoardContainer.className = "player-board-container";
+        playerBoardContainer.className = 'player-board-container';
         spot.appendChild(addCatImg(currentCat));
-        if (currentCat.type === "compact kitty") {
+        if (currentCat.type === 'compact kitty') {
           playerBoardContainer.removeChild(rotateButton);
-          playerBoardContainer.classList.add("shrink");
-          compBoardContainer.style.display = "flex";
+          playerBoardContainer.classList.add('shrink');
+          compBoardContainer.style.display = 'flex';
           createCompGameBoardDisplay(compBoardData, playerBoardData);
           document.documentElement.style.setProperty(
-            "--shrink-scale",
+            '--shrink-scale',
             `min(1, ${shrinkSize()})`
           );
-          window.addEventListener("resize", setShrinkScale);
-          catTrackerContainer.style.visibility = "visible";
+          window.addEventListener('resize', setShrinkScale);
+          catTrackerContainer.style.visibility = 'visible';
           compBoardData.compPlaceCats();
         }
       }
@@ -338,8 +338,8 @@ function populateDisplay(playerBoardData, compBoardData) {
   playerBoardContainer.appendChild(rotateButton);
 }
 
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Shift") {
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Shift') {
     rotateCat();
   }
 });
