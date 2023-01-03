@@ -133,7 +133,6 @@ function compFireShot(opponentBoard) {
     let topScore = 0;
     possibleHits = allPossibleHits.reduce((a, b) => {
       const spotGrade = gradeSpot(opponentBoard, b);
-      console.log(spotGrade, topScore);
       if (spotGrade > topScore) {
         topScore = spotGrade;
         return [b];
@@ -143,7 +142,6 @@ function compFireShot(opponentBoard) {
       }
       return a
     }, []);
-    console.log(possibleHits);
   }
   return possibleHits[Math.floor(possibleHits.length * Math.random())];
 }
