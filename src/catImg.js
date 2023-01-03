@@ -61,4 +61,41 @@ function appendCatImages() {
   fifth.classList.add("cat-tracker-fifth");
 }
 
-export { addCatImg, appendCatImages };
+function setCatAnimation(cat) {
+  let catImageSrc;
+  let tag;
+  switch (cat.type) {
+    case 'big stretch':
+      catImageSrc = cat1;
+      tag = 'catOne';
+      break;
+    case 'downward cat':
+      catImageSrc = cat2;
+      tag = 'catTwo';
+      break;
+    case 'stuff strutter':
+      catImageSrc = cat3;
+      tag = 'catThree';
+      break;
+    case 'quasi loaf':
+      catImageSrc = cat4;
+      tag = 'catFour';
+      break;
+    case 'compact kitty':
+      catImageSrc = cat5;
+      tag = 'catFive';
+      break;
+    default:
+      break;
+  }
+  const container = document.createElement('div');
+  container.classList.add('cat-animation');
+  container.classList.add(`${tag}`);
+  const catImg = new Image();
+  catImg.src = catImageSrc;
+  container.append(catImg);
+  container.classList.add(`${cat.orientation}`);
+  return container;
+}
+
+export { addCatImg, appendCatImages, setCatAnimation };

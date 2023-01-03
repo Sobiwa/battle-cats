@@ -2,9 +2,21 @@
 /* eslint-disable default-case */
 
 import rotateIcon from "./img/format-rotate-90.svg";
-import { addCatImg, appendCatImages } from "./catImg";
+import { addCatImg, appendCatImages, setCatAnimation } from "./catImg";
 import { compFireShot } from "./bot";
 import { createPlayerGameBoard, createCompGameBoard } from "./gameboard";
+
+import eatSoundAudio from './sound/eatSound.ogg';
+import hitAudio from './sound/hit.ogg';
+import missAudio from './sound/miss.ogg';
+
+const fullGameDisplay = document.querySelector('.full-game');
+
+function playSound(src, vol) {
+  const sound = new Audio(src);
+  sound.volume = vol;
+  sound.play();
+}
 
 const playerBoardContainer = document.querySelector(".player-board-container");
 const compBoardContainer = document.querySelector(".comp-board-container");
@@ -136,13 +148,17 @@ function clearPage() {
   removeChildren(compBoardContainer);
   removeChildren(catTrackerContainer);
   catTrackerContainer.style.visibility = "hidden";
+  const catAnimations = document.querySelectorAll('.cat-animation');
+  catAnimations.forEach((catAni) => {
+    catAni.remove();
+  });
 }
 
 function endGameScreen(win) {
   const loseMessages = [
-    "Aw shucks! At this rate Dr. Vetman is going to call KPS (Kitty Protective Services).",
+    "Aw shucks! At this rate Dr. Vetman is going to call KPS (Kitty Protective Services)",
     "Oh well! More to love, right?",
-    "Sodium overload! Better luck next time.",
+    "Sodium overload! Better luck next time",
     "You lose! How in the world do your cats eat so many cheese balls anyway?",
     "Welp! There goes your cats' diets!",
     "Hmm, I wonder how much it is for one of those cat treadmills...",
@@ -154,8 +170,8 @@ function endGameScreen(win) {
     "Dr. Vetman has bigger cats to worry about now!",
     "Yeehaw! Maybe next time your neighbor will think twice!",
     "Nice aim! You must've thrown cheese balls before!",
-    "This might be your greatest accomplishment.",
-    "Victory! But seriously, too many cheese balls is probably pretty bad for cats.",
+    "This might be your greatest accomplishment",
+    "Victory! But seriously, too many cheese balls is probably pretty bad for cats",
     "Winner, winner, kitty dinner!",
   ];
   const array = win ? winMessages : loseMessages;
@@ -183,9 +199,39 @@ function endGameScreen(win) {
   }, 100);
 }
 
+function passCatImgAcrossScreen({ type }) {
+  let targetClass;
+  switch (type) {
+    case 'big stretch':
+      targetClass = 'catOne';
+      break;
+    case 'downward cat':
+      targetClass = 'catTwo';
+      break;
+    case 'stuff strutter':
+      targetClass = 'catThree';
+      break;
+    case 'quasi loaf':
+      targetClass = 'catFour';
+      break;
+    case 'compact kitty':
+      targetClass = 'catFive';
+      break;
+    default:
+      break;
+  }
+  const targetElement = document.querySelector(`.${targetClass}`);
+  targetElement.classList.add('move');
+}
+
 function compRetaliation(playerBoard) {
   const target = compFireShot(playerBoard);
   playerBoard.takeAttack(target);
+  const cat = playerBoard.board[`[${target}]`].occupiedBy;
+  if (cat && cat.isSunk()) {
+    playSound(eatSoundAudio, 0.5);
+    passCatImgAcrossScreen(cat);
+  }
   const dataID = `[data-coord='${target}']`;
   const domCell = document.querySelector(dataID);
   applyHitImage(domCell, playerBoard, target);
@@ -207,7 +253,9 @@ function createCompGameBoardDisplay(boardData, oppBoardData) {
         boardData.takeAttack(coord.coordinates);
         applyHitImage(cell, boardData, coord.coordinates);
         if (coord.occupiedBy) {
+          playSound(hitAudio, 0.05);
           if (coord.occupiedBy.isSunk()) {
+            playSound(eatSoundAudio, 0.5);
             const cat = coord.occupiedBy;
             cat.domElement.classList.remove("hidden");
             cat.coordHit.forEach((spot) => {
@@ -223,6 +271,8 @@ function createCompGameBoardDisplay(boardData, oppBoardData) {
               return;
             }
           }
+        } else {
+          playSound(missAudio, 0.02);
         }
         compRetaliation(oppBoardData);
       }
@@ -230,6 +280,11 @@ function createCompGameBoardDisplay(boardData, oppBoardData) {
     compBoardDisplay.appendChild(cell);
   }
   compBoardContainer.appendChild(compBoardDisplay);
+}
+
+function prepareCatAnimation(cat) {
+  const ani = setCatAnimation(cat);
+  fullGameDisplay.append(ani);
 }
 
 function createPlayerGameBoardDisplay(playerBoardData, compBoardData) {
@@ -249,6 +304,7 @@ function createPlayerGameBoardDisplay(playerBoardData, compBoardData) {
         currentCat
       );
       if (coordArray) {
+        prepareCatAnimation(currentCat);
         playerBoardData.placeCat(coordArray, currentCat);
         playerBoardData.catAdded();
         playerBoardDisplay.className = hoverEffect(currentCat);

@@ -26,24 +26,28 @@
 
 body {
   font-family: comfy, Verdana, Geneva, Tahoma, sans-serif;
+  margin: 0;
+  padding: 0;
+  color: whitesmoke;
+  height: 100vh;
+  width: 100vw;
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.full-game {
   position: relative;
   display: grid;
   grid-template: 100px 1fr / 1fr 1fr 1fr;
   align-items: center;
-  /* justify-items: center; */
-  margin: 0;
-  padding: 0;
-  position: relative;
-  color: whitesmoke;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   background: url("./img/grrass.jpeg");
   background-repeat: repeat;
   background-size: 400px;
   text-align: center;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
+  overflow: hidden;
 }
 
 .opening-screen {
@@ -555,7 +559,57 @@ h1 {
   font-size: 100%;
 }
 
-@media only screen and (max-width: 900px) {
+.cat-animation {
+  position: absolute;
+  z-index: 20;
+  width: 100vw;
+  height: auto;
+  pointer-events: none;
+  /* transform-origin: top left; */
+  transition: translate 1.5s ease-in-out;
+  inset: 0;
+  margin: auto;
+}
+
+.cat-animation.vertical {
+  rotate: -90deg;
+}
+
+.cat-animation.catOne,
+.cat-animation.catTwo,
+.cat-animation.catFour,
+.cat-animation.catThree.move,
+.cat-animation.catFive.move {
+  translate: -100vw;
+}
+
+.cat-animation.catThree,
+.cat-animation.catFive,
+.cat-animation.catOne.move,
+.cat-animation.catTwo.move,
+.cat-animation.catFour.move {
+  translate: 100vw;
+}
+
+.cat-animation.catOne.vertical,
+.cat-animation.catTwo.vertical,
+.cat-animation.catFour.vertical,
+.cat-animation.catThree.vertical.move,
+.cat-animation.catFive.vertical.move  {
+  translate: 0 120vh;
+}
+
+.cat-animation.catThree.vertical,
+.cat-animation.catFive.vertical,
+.cat-animation.catOne.vertical.move,
+.cat-animation.catTwo.vertical.move,
+.cat-animation.catFour.vertical.move  {
+  translate: 0 -120vh;
+}
+
+.cat-animation img {
+  width: 100%;
+  height: 100%;
 }
 
 @media only screen and (max-width: 850px) {
@@ -569,7 +623,7 @@ h1 {
     --cat-tracker-width: calc(var(--board-size) * 0.4);
   }
 
-  body {
+  .full-game {
     display: grid;
     grid-template: 5vh 1fr 1.3fr 50px/ 50vw 50vw;
     align-items: center;

@@ -29,7 +29,7 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(png|svg|jpg|jpeg|gif|mp3|ogg)$/i,
         type: 'asset/resource',
       },
       {
