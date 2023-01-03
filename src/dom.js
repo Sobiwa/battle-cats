@@ -181,7 +181,7 @@ function endGameScreen(win) {
   screen.classList.add('end-game');
   const verdict = document.createElement('div');
   verdict.classList.add('verdict');
-  verdict.textContent = win ? 'Player wins! :)' : 'Neighbor Wins! :('
+  verdict.innerText = win ? 'Player wins! :)' : 'Neighbor Wins!\n:('
   const endMessage = document.createElement('div');
   endMessage.classList.add('end-message');
   endMessage.textContent = array[Math.floor(Math.random() * array.length)];

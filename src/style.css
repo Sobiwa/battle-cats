@@ -545,6 +545,7 @@ h1 {
 }
 
 .play-again-button {
+  font-size: 80%;
   color: whitesmoke;
   margin: 10px;
   appearance: none;
@@ -556,7 +557,7 @@ h1 {
   background: radial-gradient(hsl(39, 100%, 58%), hsl(39, 100%, 50%));
   cursor: grab;
   transition: 0.3s;
-  font-size: 100%;
+  text-align: center;
 }
 
 .cat-animation {
